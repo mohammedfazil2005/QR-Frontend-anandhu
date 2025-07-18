@@ -4,7 +4,7 @@ import { editEmployees } from "../../services/AllApi";
 import { empContext } from "../contexts/EmployeeContext";
 const EditingModal = ({ editshow, handleEditClose, newData, setRender }) => {
   const [imageTypeStatus, setImageTypeStatus] = useState(false);
-  console.log(imageTypeStatus);
+ 
 
   const { setEmployee } = useContext(empContext);
   const [preview, setPreview] = useState();

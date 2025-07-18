@@ -8,6 +8,9 @@ return await commonApi("post","/postEmp",reqBody,reqHeader)
 export const getEmployee=async()=>{
     return await commonApi("get",'/getEmP',{})
 }
+export const getEmployeeById=async(id)=>{
+    return await commonApi("get",`/getemployee/${id}`,{})
+}
 //delete
 export const deleteEmployee=async(id)=>{
     return await commonApi('delete', `/deleteEmp/${id}`,{})

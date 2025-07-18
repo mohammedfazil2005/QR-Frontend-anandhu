@@ -1,15 +1,25 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { deleteEmployee, getEmployee } from "../../services/AllApi";
 import { empContext } from "../contexts/EmployeeContext";
+import { QRCodeCanvas } from "qrcode.react";
+import { saveAs } from "file-saver";
+
+
 
 const Table = ({setEditShow,setNewData,}) => {
 
   const {employee, setEmployee}=useContext(empContext)
+    const qrRef = useRef(null);
+
 
 
   const getAllEmp = async () => {
-    const ApiResponse = await getEmployee();
+   try {
+     const ApiResponse = await getEmployee();
     setEmployee(ApiResponse.data);
+   } catch (error) {
+    console.log(error)
+   }
   };
   useEffect(() => {
     getAllEmp();
@@ -34,6 +44,21 @@ const Table = ({setEditShow,setNewData,}) => {
 
      setEditShow(true)
     };
+
+
+
+  const downloadQR = (id) => {
+    const canvas = qrRef.current.querySelector('canvas');
+
+    if (canvas) {
+      // Convert to data URL
+      canvas.toBlob((blob) => {
+        saveAs(blob, `${id}-qr.png`);
+      });
+    }
+
+  };
+ 
 
   return (
     <div
@@ -85,7 +110,7 @@ const Table = ({setEditShow,setNewData,}) => {
                   <tbody>
                     {employee.length > 0
                       ? employee?.map((details) => (
-                          <tr className="border-bottom">
+                          <tr key={details._id} className="border-bottom">
                             <td className="text-center py-3">
                               <div className="position-relative d-inline-block">
                                 <img
@@ -96,7 +121,7 @@ const Table = ({setEditShow,setNewData,}) => {
                                     width: "65px",
                                     height: "65px",
                                     objectFit: "cover",
-                                    border: "3px solid #28a745",
+                                    border: "3px solid lightgray",
                                   }}
                                 />
                                 <span
@@ -138,17 +163,8 @@ const Table = ({setEditShow,setNewData,}) => {
                               </div>
                             </td>
                             <td className="text-center py-3">
-                              <div className="d-inline-block position-relative">
-                                <img
-                                  src="https://api.qrserver.com/v1/create-qr-code/?data=EMP001"
-                                  alt="QR Code"
-                                  className="rounded shadow-sm"
-                                  style={{
-                                    width: "65px",
-                                    height: "65px",
-                                    objectFit: "cover",
-                                    border: "2px solid #fff3",
-                                  }}
+                              <div className="d-inline-block position-relative" ref={qrRef}>
+                                <QRCodeCanvas value={`http://localhost:5173/view/${details._id}`} size={100}
                                 />
                               </div>
                             </td>
@@ -157,7 +173,7 @@ const Table = ({setEditShow,setNewData,}) => {
                                 className="btn-group-vertical btn-group-sm gap-1"
                                 role="group"
                               >
-                                <button className="btn btn-outline-light btn-sm px-3">
+                                <button onClick={()=>downloadQR(details.employeeName)} className="btn btn-outline-light btn-sm px-3">
                                   <i className="fas fa-download me-1"></i>
                                   Download QR
                                 </button>
@@ -177,7 +193,11 @@ const Table = ({setEditShow,setNewData,}) => {
                             </td>
                           </tr>
                         ))
-                      : ""}
+                      : <tr>
+        <td colSpan="9" className="text-center py-3 text-light">
+          No Employee Data Available
+        </td>
+      </tr>}
                   </tbody>
                 </table>
               </div>
@@ -190,6 +210,7 @@ const Table = ({setEditShow,setNewData,}) => {
           </div>
         </div>
       </div>
+      
     </div>
   );
 };

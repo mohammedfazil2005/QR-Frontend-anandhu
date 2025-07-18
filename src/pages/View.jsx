@@ -1,6 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import '../costumStyles/StyleView.css'
+import { useNavigate, useParams } from "react-router-dom";
+import { getEmployeeById } from "../../services/AllApi";
 const View = () => {
+
+  const {id}=useParams()
+  const navigate=useNavigate()
+  const [user,setUser]=useState({})
+
+  const fetchEmpDetails=async()=>{
+    try {
+      const userDetails=await getEmployeeById(id)
+      if(userDetails.status==200){
+        setUser(userDetails.data.isUser)
+      }else{
+        alert("Something went wrong!")
+        navigate('/')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    if(!id){
+      navigate('/')
+    }
+
+    fetchEmpDetails()
+
+
+  },[])
+
+  
+
   return (
     <div className="cruise-background">
       
@@ -27,39 +60,39 @@ const View = () => {
 
         <div className="card-body">
           <img
-            src="https://st3.depositphotos.com/15648834/17930/v/450/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"
+            src={`http://localhost:3000/Photos/${user.employeePhoto}`}
             alt="Employee"
             className="profile-photo"
           />
           <div className="details">
             <div className="detail-row">
               <span>Name</span>
-              <span>Rahul </span>
+              <span>{user.employeeName} </span>
             </div>
             <div className="detail-row">
               <span>Passport No</span>
-              <span>M1234567</span>
+              <span>{user.employeePassportNumber}</span>
             </div>
             <div className="detail-row">
               <span>CDC No</span>
-              <span>IN123456</span>
+              <span>{user.employeeCDCNumber}</span>
             </div>
             <div className="detail-row">
               <span>Designation</span>
-              <span>Dummy Data</span>
+              <span>{user.employeeDesignation}</span>
             </div>
             <div className="detail-row">
               <span>Nationality</span>
-              <span>Indian</span>
+              <span>{user.employeeDesignation}</span>
             </div>
             <div className="detail-row">
               <span>Joining Date</span>
-              <span>01-July-2025</span>
+              <span>{user.employeeJoiningDate}</span>
             </div>
-            <div className="detail-row">
+            {/* <div className="detail-row">
               <span>Company</span>
               <span>CruiseTech Solutions</span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
